@@ -11,14 +11,14 @@ import java.util.UUID;
 public class SignInResponseDto {
     private final UUID userId;
     private final String email;
-    private final String nickname;
+    private final String name;
     private final String profileUrl;
 
     @Builder
-    public SignInResponseDto(UUID userId, String email, String nickname, String profileUrl) {
+    public SignInResponseDto(UUID userId, String email, String name, String profileUrl) {
         this.userId = userId;
         this.email = email;
-        this.nickname = nickname;
+        this.name = name;
         this.profileUrl = profileUrl;
     }
 }

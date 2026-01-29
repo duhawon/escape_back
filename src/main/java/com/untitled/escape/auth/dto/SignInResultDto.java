@@ -20,6 +20,6 @@ public class SignInResultDto {
     }
 
     public static SignInResponseDto convertFromDto(SignInResultDto dto) {
-        return new SignInResponseDto(dto.user.getId(), dto.user.getEmail(), dto.user.getNickname(), dto.user.getProfileUrl());
+        return new SignInResponseDto(dto.user.getId(), dto.user.getEmail(), dto.user.getName(), dto.user.getProfileUrl());
     }
 }

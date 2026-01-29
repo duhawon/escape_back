@@ -30,15 +30,12 @@ public class UserServiceImpl implements UserService{
         User user = User.builder()
                 .email(signUpRequestDto.getEmail())
                 .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
-                .nickname(getRandomNickname())
+                .name(signUpRequestDto.getName())
                 .build();
         // 3. 저장
         userRepository.save(user);
         // 4. user반환
         return user;
-    }
-    private String getRandomNickname() {
-        return "";
     }
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)

@@ -28,8 +28,8 @@ public class User extends BaseEntity {
     private String password;
 
     @Setter
-    @Column(name = "nickname", nullable = false)
-    private String nickname;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Setter
     @Column(name = "profile_url")
