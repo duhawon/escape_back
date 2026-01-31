@@ -4,6 +4,7 @@ import com.untitled.escape.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 import java.util.UUID;
@@ -13,10 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name="users")
 public class User extends BaseEntity {
     @Id
     @UuidGenerator
-    @Column(name = "user_id", nullable = false, updatable = false)
     private UUID id;
 
     @Setter
@@ -24,7 +25,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Setter
-    @Column
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Setter
