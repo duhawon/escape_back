@@ -1,7 +1,7 @@
 package com.untitled.escape.domain.user.service;
 
 import com.untitled.escape.domain.user.User;
-import com.untitled.escape.domain.user.dto.SignUpRequestDto;
+import com.untitled.escape.domain.user.dto.SignUpRequest;
 import com.untitled.escape.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,18 +19,18 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User signUp(SignUpRequestDto signUpRequestDto) {
+    public User signUp(SignUpRequest signUpRequest) {
         // 1. 기존에 사용중인 이메일인지 확인
-        userRepository.findByEmail(signUpRequestDto.getEmail())
+        userRepository.findByEmail(signUpRequest.getEmail())
                 .ifPresent(user -> {
                     // TODO : CustomException으로 변경
                     throw new RuntimeException("이미 사용중인 이메일입니다.");
                 });
         // 2. user 객체 생성 (passwordEncoder salt 사용)
         User user = User.builder()
-                .email(signUpRequestDto.getEmail())
-                .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
-                .name(signUpRequestDto.getName())
+                .email(signUpRequest.getEmail())
+                .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                .name(signUpRequest.getName())
                 .build();
         // 3. 저장
         userRepository.save(user);

@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SignUpRequestDto {
+public class SignUpRequest {
     private String name;
     private String email;
     private String password;

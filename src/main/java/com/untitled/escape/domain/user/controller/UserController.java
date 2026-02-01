@@ -1,8 +1,8 @@
 package com.untitled.escape.domain.user.controller;
 
 import com.untitled.escape.domain.user.User;
-import com.untitled.escape.domain.user.dto.SignUpRequestDto;
-import com.untitled.escape.domain.user.dto.SignUpResponseDto;
+import com.untitled.escape.domain.user.dto.SignUpRequest;
+import com.untitled.escape.domain.user.dto.SignUpResponse;
 import com.untitled.escape.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +21,9 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<SignUpResponseDto> signUp(@RequestBody final SignUpRequestDto signUpRequestDto) {
-        User user = userService.signUp(signUpRequestDto);
-        SignUpResponseDto signUpResponseDto = SignUpResponseDto.builder().userId(user.getId()).build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(signUpResponseDto);
+    public ResponseEntity<SignUpResponse> signUp(@RequestBody final SignUpRequest signUpRequest) {
+        User user = userService.signUp(signUpRequest);
+        SignUpResponse signUpResponse = SignUpResponse.builder().userId(user.getId()).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(signUpResponse);
     }
 }
