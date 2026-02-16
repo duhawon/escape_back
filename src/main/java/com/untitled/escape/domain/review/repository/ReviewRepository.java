@@ -14,4 +14,11 @@ import java.util.UUID;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findAllByRoom_Id(Long roomId);
     Optional<Review> findByUserIdAndRoom_Id(UUID userId, Long roomId);
-    boolean existsByUserIdAndRoom_Id(UUID userId, Long roomId);}
+    boolean existsByUserIdAndRoom_Id(UUID userId, Long roomId);
+    @Query("""
+            select avg(r.rating)
+            from Review r
+            where r.room.id = :roomId
+            """)
+    Double findAverageRatingByRoomId(@Param("roomId") Long roomId);
+}
