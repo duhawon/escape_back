@@ -2,11 +2,15 @@ package com.untitled.escape.domain.user.service;
 
 import com.untitled.escape.domain.user.User;
 import com.untitled.escape.domain.user.dto.SignUpRequest;
+import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -52,5 +56,33 @@ public class UserServiceImpl implements UserService{
                     // TODO : CustomException으로 변경
                     throw new RuntimeException("사용자를 찾을 수 없습니다.");
                 });
+    }
+    @Override
+    public UserSummary getUserSummary(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+        return UserSummary.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .profileImgUrl(user.getProfileUrl())
+                .build();
+    }
+    @Override
+    public Map<UUID, UserSummary> getUserSummaries(List<UUID> userIds) {
+        List<User> users = userRepository.findAllById(userIds);
+        return users.stream()
+                .collect(Collectors.toMap(
+                        User::getId,
+                        user -> UserSummary.builder()
+                                .userId(user.getId())
+                                .name(user.getName())
+                                .profileImgUrl(user.getProfileUrl())
+                                .build()
+                ));
+    }
+
+    @Override
+    public User getReference(UUID userID) {
+        return userRepository.getReferenceById(userID);
     }
 }
