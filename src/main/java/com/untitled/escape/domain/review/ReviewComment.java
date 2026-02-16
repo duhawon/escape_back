@@ -5,10 +5,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
 @Entity
+@SQLRestriction("deleted_at is null")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,4 +32,8 @@ public class ReviewComment extends BaseEntity {
     @Size(max =  1000)
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
