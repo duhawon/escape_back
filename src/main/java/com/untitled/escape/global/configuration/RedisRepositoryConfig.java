@@ -1,4 +1,4 @@
-package com.untitled.escape.configuration;
+package com.untitled.escape.global.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

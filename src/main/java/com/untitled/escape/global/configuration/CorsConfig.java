@@ -1,4 +1,4 @@
-package com.untitled.escape.configuration.security;
+package com.untitled.escape.global.configuration;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

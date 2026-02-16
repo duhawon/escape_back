@@ -1,4 +1,4 @@
-package com.untitled.escape.configuration.security;
+package com.untitled.escape.global.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
