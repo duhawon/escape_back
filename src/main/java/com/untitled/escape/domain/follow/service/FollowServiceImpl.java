@@ -8,11 +8,13 @@ import com.untitled.escape.domain.user.service.UserService;
 import com.untitled.escape.global.security.SecurityUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,24 +30,30 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserSummary> getFollowings(UUID userId) {
-        // follower가 나인사람
-        List<Follow> follows = followRepository.findAllByFollower_Id(userId);
-        List<UUID> userIds = follows.stream()
-                .map(follow ->  follow.getFollowee().getId())
-                .toList();
-        return userService.getUserSummaries(userIds).values().stream().toList();
+    public Slice<UserSummary> getFollowings(UUID userId, Pageable pageable) {
+        // DESC : 내가 팔로우 한 사람들 follower가 나인사람
+        Slice<UUID> idSlice = followRepository.findFollowingIds(userId, pageable);
+        List<UUID> ids = idSlice.getContent();
+        if (ids.isEmpty()) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
+        Map<UUID, UserSummary> userMap = userService.getUserSummaries(ids);
+        return idSlice.map(userMap::get);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserSummary> getFollowers(UUID userId) {
-        // followee가 나인사람
-        List<Follow> follows = followRepository.findAllByFollowee_Id(userId);
-        List<UUID> userIds = follows.stream()
-                .map(follow -> follow.getFollower().getId())
-                .toList();
-        return userService.getUserSummaries(userIds).values().stream().toList();
+    public Slice<UserSummary> getFollowers(UUID userId, Pageable pageable) {
+        // DESC : 나를 팔로우 한 사람들 followee가 나인사람
+        Slice<UUID> idSlice = followRepository.findFollowerIds(userId, pageable);
+        List<UUID> ids = idSlice.getContent();
+
+        if (ids.isEmpty()) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
+
+        Map<UUID, UserSummary> userMap = userService.getUserSummaries(ids);
+        return idSlice.map(userMap::get);
     }
 
     @Override

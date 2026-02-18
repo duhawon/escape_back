@@ -3,13 +3,14 @@ package com.untitled.escape.domain.follow.service;
 import com.untitled.escape.domain.user.dto.UserSummary;
 
 import org.springframework.data.domain.Pageable;
-import java.util.List;
+import org.springframework.data.domain.Slice;
+
 import java.util.UUID;
 
 public interface FollowService {
-    List<UserSummary> getFollowings(UUID userId);
+    Slice<UserSummary> getFollowings(UUID userId, Pageable pageable);
 
-    List<UserSummary> getFollowers(UUID userId);
+    Slice<UserSummary> getFollowers(UUID userId, Pageable pageable);
 
     void follow(UUID targetUserId);
 
