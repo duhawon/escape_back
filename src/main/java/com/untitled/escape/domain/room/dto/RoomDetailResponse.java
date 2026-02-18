@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Builder
@@ -15,7 +15,7 @@ public class RoomDetailResponse {
     private String name;
     private BigDecimal rating;
 
-    private Set<RoomGenre> genres;
+    private List<String> genres;
     private BigDecimal difficulty;
     private int playTimeMinutes;
     private int minPlayers;
@@ -24,11 +24,15 @@ public class RoomDetailResponse {
     private String description;
 
     public static RoomDetailResponse from(Room room, BigDecimal rating) {
+        List<String> genreNames = room.getGenres().stream()
+                .map(RoomGenre::getDisplayName)
+                .toList();
+
         return RoomDetailResponse.builder()
                 .id(room.getId())
                 .name(room.getName())
                 .rating(rating)
-                .genres(room.getGenres())
+                .genres(genreNames)
                 .difficulty(room.getDifficulty())
                 .playTimeMinutes(room.getPlayTimeMinutes())
                 .minPlayers(room.getMinPlayers())
