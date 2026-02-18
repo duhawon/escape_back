@@ -14,6 +14,9 @@ import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
 import com.untitled.escape.global.security.SecurityUtils;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -147,11 +150,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewSummaryResponse> getReviewsByRoom(Long roomId) {
-        List<Review> reviews = reviewRepository.findAllByRoom_Id(roomId);
-        if(reviews.isEmpty()) {
-            return Collections.emptyList();
+    public Slice<ReviewSummaryResponse> getReviewsByRoom(Long roomId, Pageable pageable) {
+        Slice<Review> reviewSlice = reviewRepository.findAllByRoom_IdOrderByCreatedAtDescIdDesc(roomId, pageable);
+        if(reviewSlice.isEmpty()) {
+            return new SliceImpl<>(List.of(), pageable, false);
         }
+        List<Review> reviews = reviewSlice.getContent();
         List<UUID> userIds = reviews.stream()
                 .map(Review::getUserId)
                 .distinct()
@@ -176,9 +180,8 @@ public class ReviewServiceImpl implements ReviewService {
                                 reviewCommentCountMap.getOrDefault(review.getId(), 0L)
                         ))
                 .toList();
-        return reviewSummaryResponses;
+        return new SliceImpl<>(reviewSummaryResponses, pageable, reviewSlice.hasNext());
     }
-
     @Override
     @Transactional
     public void deleteReview(Long reviewId) {
