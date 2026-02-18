@@ -2,6 +2,8 @@ package com.untitled.escape.domain.review.repository;
 
 import com.untitled.escape.domain.review.ReviewComment;
 import com.untitled.escape.domain.review.repository.projection.ReviewCommentCount;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +16,7 @@ import java.util.UUID;
 
 @Repository
 public interface ReviewCommentRepository extends JpaRepository<ReviewComment, Long> {
-    List<ReviewComment> findAllByReview_Id(Long reviewId);
+    Slice<ReviewComment> findAllByReview_IdOrderByCreatedAtDescIdDesc(Long reviewId, Pageable pageable);
 
     @Query("""
             select rc.review.id as reviewId, count(rc.id) as count
@@ -32,4 +34,6 @@ public interface ReviewCommentRepository extends JpaRepository<ReviewComment, Lo
             and rc.deletedAt is null
             """)
     int softDeleteAllByReviewId(@Param("reviewId") Long reviewId);
+
+    long countByReview_Id(Long reviewId);
 }

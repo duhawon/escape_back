@@ -5,7 +5,6 @@ import com.untitled.escape.domain.user.dto.UserSummary;
 import lombok.Builder;
 import lombok.Getter;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Builder
@@ -21,13 +20,11 @@ public class ReviewDetailResponse {
     private long likeCount;
     private long commentCount;
 
-    private List<ReviewCommentResponse> comments;
-
     public static ReviewDetailResponse of(
             Review review,
             UserSummary userSummary,
-            Long likeCount,
-            List<ReviewCommentResponse> commentResponses) {
+            long likeCount,
+            long commentCount) {
         return ReviewDetailResponse.builder()
                 .reviewId(review.getId())
                 .roomId(review.getRoom().getId())
@@ -36,8 +33,7 @@ public class ReviewDetailResponse {
                 .rating(review.getRating())
                 .spoiler(review.isSpoiler())
                 .likeCount(likeCount)
-                .commentCount(commentResponses.size())
-                .comments(commentResponses)
+                .commentCount(commentCount)
                 .build();
     }
 }

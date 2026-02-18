@@ -4,12 +4,13 @@ import com.untitled.escape.domain.review.dto.CreateReviewCommentRequest;
 import com.untitled.escape.domain.review.dto.ReviewCommentResponse;
 import com.untitled.escape.domain.review.dto.UpdateReviewCommentRequest;
 import com.untitled.escape.domain.review.service.ReviewCommentService;
+import com.untitled.escape.global.dto.response.SliceResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/reviews/{reviewId}/comments")
@@ -28,8 +29,8 @@ public class ReviewCommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewCommentResponse>> getComments(@PathVariable Long reviewId) {
-        return ResponseEntity.status(HttpStatus.OK).body(reviewCommentService.getComments(reviewId));
+    public SliceResponse<ReviewCommentResponse> getComments(@PathVariable Long reviewId, @PageableDefault(size = 10) Pageable pageable) {
+        return SliceResponse.from(reviewCommentService.getComments(reviewId, pageable));
     }
 
     @PutMapping("/{commentId}")

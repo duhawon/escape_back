@@ -12,10 +12,12 @@ import com.untitled.escape.domain.review.repository.ReviewRepository;
 import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
 import com.untitled.escape.global.security.SecurityUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,14 +51,18 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewCommentResponse> getComments(Long reviewId) {
+    public Slice<ReviewCommentResponse> getComments(Long reviewId, Pageable pageable) {
         if (!reviewRepository.existsById(reviewId)) {
             throw new RuntimeException("존재하지 않는 리뷰 입니다.");
         }
 
-        List<ReviewComment> comments = reviewCommentRepository.findAllByReview_Id(reviewId);
+        Slice<ReviewComment> commentSlice = reviewCommentRepository.findAllByReview_IdOrderByCreatedAtDescIdDesc(reviewId, pageable);
 
-        if(comments.isEmpty()) return Collections.emptyList();
+        if (commentSlice.isEmpty()) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
+
+        List<ReviewComment> comments = commentSlice.getContent();
 
         // User Summary 조회를 위한 UserIds
         List<UUID> userIds = comments.stream()
@@ -79,7 +85,7 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
                                 likeCountMap.getOrDefault(comment.getId(),0L)
                         ))
                 .toList();
-        return commentResponses;
+        return new SliceImpl<>(commentResponses, pageable, commentSlice.hasNext());
     }
 
     @Override

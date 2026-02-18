@@ -3,7 +3,6 @@ package com.untitled.escape.domain.review.service;
 import com.untitled.escape.domain.like.TargetType;
 import com.untitled.escape.domain.like.service.LikeService;
 import com.untitled.escape.domain.review.Review;
-import com.untitled.escape.domain.review.ReviewComment;
 import com.untitled.escape.domain.review.dto.*;
 import com.untitled.escape.domain.review.repository.ReviewCommentRepository;
 import com.untitled.escape.domain.review.repository.ReviewRepository;
@@ -96,13 +95,8 @@ public class ReviewServiceImpl implements ReviewService {
 
         UserSummary userSummary = userService.getUserSummary(review.getUserId());
         long likeCount = likeService.getLikeCount(review.getId(), TargetType.REVIEW);
-
-        List<ReviewComment> comments = reviewCommentRepository.findAllByReview_Id(review.getId());
-        if (comments.isEmpty()) {
-            return ReviewDetailResponse.of(review, userSummary, likeCount, Collections.emptyList());
-        }
-        List<ReviewCommentResponse> commentResponses = buildCommentResponses(comments);
-        return ReviewDetailResponse.of(review, userSummary, likeCount, commentResponses);
+        long commentCount = reviewCommentRepository.countByReview_Id(reviewId);
+        return ReviewDetailResponse.of(review, userSummary, likeCount, commentCount);
     }
 
     @Override
@@ -114,38 +108,9 @@ public class ReviewServiceImpl implements ReviewService {
 
         UserSummary userSummary = userService.getUserSummary(review.getUserId());
         long likeCount = likeService.getLikeCount(review.getId(), TargetType.REVIEW);
-        List<ReviewComment> comments = reviewCommentRepository.findAllByReview_Id(review.getId());
+        long commentCount = reviewCommentRepository.countByReview_Id(review.getId());
 
-        if (comments.isEmpty()) {
-            return ReviewDetailResponse.of(review, userSummary, likeCount, Collections.emptyList());
-        }
-        List<ReviewCommentResponse> commentResponses = buildCommentResponses(comments);
-        return ReviewDetailResponse.of(review, userSummary, likeCount, commentResponses);
-    }
-
-    public List<ReviewCommentResponse> buildCommentResponses(List<ReviewComment> comments) {
-        // User Summary 조회를 위한 UserIds
-        List<UUID> userIds = comments.stream()
-                .map(ReviewComment::getUserId)
-                .distinct()
-                .toList();
-        Map<UUID, UserSummary> userSummaryMap = userService.getUserSummaries(userIds);
-
-        // LikeCount 조회를 위한 commentIds
-        List<Long> commentIds = comments.stream()
-                .map(ReviewComment::getId)
-                .toList();
-        Map<Long, Long> likeCountMap = likeService.getLikeCountMap(commentIds, TargetType.REVIEW_COMMENT);
-
-        List<ReviewCommentResponse> commentResponses = comments.stream()
-                .map(comment ->
-                        ReviewCommentResponse.from(
-                                comment,
-                                userSummaryMap.get(comment.getUserId()),
-                                likeCountMap.getOrDefault(comment.getId(), 0L)
-                        ))
-                .toList();
-        return commentResponses;
+        return ReviewDetailResponse.of(review, userSummary, likeCount, commentCount);
     }
 
     @Override
