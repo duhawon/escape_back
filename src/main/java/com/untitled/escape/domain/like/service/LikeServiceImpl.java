@@ -8,6 +8,9 @@ import com.untitled.escape.domain.like.repository.projection.TargetLikeCount;
 import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
 import com.untitled.escape.global.security.SecurityUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,10 +56,15 @@ public class LikeServiceImpl implements LikeService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserSummary> getLikeUsers(TargetType targetType, Long targetId) {
-        List<UUID> userIds = likeRepository.findUserIdsByTarget(targetType, targetId);
-        List<UserSummary> userSummaries = userService.getUserSummaries(userIds).values().stream().toList();
-        return userSummaries;
+    public Slice<UserSummary> getLikeUsers(TargetType targetType, Long targetId, Pageable pageable) {
+        Slice<UUID> userIdSlice = likeRepository.findUserIdsByTarget(targetType, targetId, pageable);
+        List<UUID> userIds = userIdSlice.getContent();
+
+        if (userIds.isEmpty()) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
+        Map<UUID, UserSummary> userMap = userService.getUserSummaries(userIds);
+        return userIdSlice.map(userMap::get);
     }
 
     @Override

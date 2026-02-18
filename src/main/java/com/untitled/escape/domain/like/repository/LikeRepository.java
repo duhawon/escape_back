@@ -3,6 +3,8 @@ package com.untitled.escape.domain.like.repository;
 import com.untitled.escape.domain.like.Like;
 import com.untitled.escape.domain.like.TargetType;
 import com.untitled.escape.domain.like.repository.projection.TargetLikeCount;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,8 +23,9 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
             from Like l
             where l.targetId = :targetId
             and l.targetType = :targetType
+            order by l.createdAt desc, l.id desc
             """)
-    List<UUID> findUserIdsByTarget(@Param("targetType") TargetType targetType, @Param("targetId") Long targetId);
+    Slice<UUID> findUserIdsByTarget(@Param("targetType") TargetType targetType, @Param("targetId") Long targetId, Pageable pageable);
 
     @Query("""
             select l.targetId as targetId, count(l.id) as count
