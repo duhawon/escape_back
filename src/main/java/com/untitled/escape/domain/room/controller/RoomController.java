@@ -2,6 +2,10 @@ package com.untitled.escape.domain.room.controller;
 import com.untitled.escape.domain.room.dto.RoomDetailResponse;
 import com.untitled.escape.domain.room.dto.RoomSummaryResponse;
 import com.untitled.escape.domain.room.service.RoomService;
+import com.untitled.escape.global.dto.response.SliceResponse;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +20,9 @@ public class RoomController {
     }
 
     @GetMapping
-    public List<RoomSummaryResponse> getRooms(@RequestParam(required = false) String query) {
-        return roomService.getRooms(query);
+    public SliceResponse<RoomSummaryResponse> getRooms(@RequestParam(required = false) String query,
+                                                       @PageableDefault(size=10) Pageable pageable) {
+        return SliceResponse.from(roomService.getRooms(query, pageable));
     }
 
     @GetMapping("/{roomId}")

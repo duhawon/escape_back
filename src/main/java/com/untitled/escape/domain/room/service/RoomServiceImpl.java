@@ -5,6 +5,8 @@ import com.untitled.escape.domain.room.Room;
 import com.untitled.escape.domain.room.dto.RoomDetailResponse;
 import com.untitled.escape.domain.room.dto.RoomSummaryResponse;
 import com.untitled.escape.domain.room.repository.RoomRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,14 +27,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RoomSummaryResponse> getRooms(String query) {
+    public Slice<RoomSummaryResponse> getRooms(String query, Pageable pageable) {
         String normalizedQuery =
                 StringUtils.hasText(query) ? query : null;
 
-        return roomRepository.findRoomSummaries(normalizedQuery)
-                .stream()
-                .map(RoomSummaryResponse::from)
-                .toList();
+        return roomRepository.findRoomSummaries(normalizedQuery, pageable)
+                .map(RoomSummaryResponse::from);
     }
 
     @Override
