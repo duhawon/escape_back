@@ -8,10 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/rooms/{roomId}/reviews")
@@ -28,8 +25,10 @@ public class RoomReviewController {
     }
 
     @GetMapping
-    public SliceResponse<ReviewSummaryResponse> getRoomReviews(@PathVariable Long roomId,
-                                                                     @PageableDefault(size = 10) Pageable pageable) {
-        return SliceResponse.from(reviewService.getReviewsByRoom(roomId, pageable));
+    public SliceResponse<ReviewSummaryResponse> getRoomReviews(
+            @PathVariable Long roomId,
+            @RequestParam(defaultValue = "new") String sort,
+            @PageableDefault(size = 10) Pageable pageable) {
+        return SliceResponse.from(reviewService.getReviewsByRoom(roomId, pageable, sort));
     }
 }

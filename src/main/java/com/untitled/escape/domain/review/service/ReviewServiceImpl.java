@@ -13,6 +13,7 @@ import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
 import com.untitled.escape.global.security.SecurityUtils;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -115,10 +116,24 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<ReviewSummaryResponse> getReviewsByRoom(Long roomId, Pageable pageable) {
-        Slice<Review> reviewSlice = reviewRepository.findAllByRoom_IdOrderByCreatedAtDescIdDesc(roomId, pageable);
+    public Slice<ReviewSummaryResponse> getReviewsByRoom(Long roomId, Pageable pageable, String sort) {
+        Pageable p = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize()
+        );
+
+        String s = (sort == null) ? "new" : sort.toLowerCase();
+
+        Slice<Review> reviewSlice = switch (s) {
+            case "old"  -> reviewRepository.findAllByRoom_IdOrderByCreatedAtAscIdAsc(roomId, p);
+            case "high" -> reviewRepository.findAllByRoom_IdOrderByRatingDescIdDesc(roomId, p);
+            case "low"  -> reviewRepository.findAllByRoom_IdOrderByRatingAscIdDesc(roomId, p);
+            case "likes" -> reviewRepository.findAllByRoomIdOrderByLikeCountDesc(roomId, TargetType.REVIEW, p);
+            default     -> reviewRepository.findAllByRoom_IdOrderByCreatedAtDescIdDesc(roomId, p);
+        };
+
         if(reviewSlice.isEmpty()) {
-            return new SliceImpl<>(List.of(), pageable, false);
+            return new SliceImpl<>(List.of(), p, false);
         }
         List<Review> reviews = reviewSlice.getContent();
         List<UUID> userIds = reviews.stream()
@@ -145,7 +160,7 @@ public class ReviewServiceImpl implements ReviewService {
                                 reviewCommentCountMap.getOrDefault(review.getId(), 0L)
                         ))
                 .toList();
-        return new SliceImpl<>(reviewSummaryResponses, pageable, reviewSlice.hasNext());
+        return new SliceImpl<>(reviewSummaryResponses, p, reviewSlice.hasNext());
     }
     @Override
     @Transactional

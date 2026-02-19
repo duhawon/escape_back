@@ -10,5 +10,5 @@ public interface ReviewService {
     ReviewDetailResponse getReview(Long reviewId);
     void deleteReview(Long reviewId);
     ReviewDetailResponse getMyReviewByRoom(Long roomId);
-    Slice<ReviewSummaryResponse> getReviewsByRoom(Long roomId, Pageable pageable);
+    Slice<ReviewSummaryResponse> getReviewsByRoom(Long roomId, Pageable pageable, String sort);
 }

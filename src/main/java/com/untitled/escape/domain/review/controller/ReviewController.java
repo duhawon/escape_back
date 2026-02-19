@@ -2,15 +2,12 @@ package com.untitled.escape.domain.review.controller;
 
 import com.untitled.escape.domain.review.dto.CreateReviewRequest;
 import com.untitled.escape.domain.review.dto.ReviewDetailResponse;
-import com.untitled.escape.domain.review.dto.ReviewSummaryResponse;
 import com.untitled.escape.domain.review.dto.UpdateReviewRequest;
 import com.untitled.escape.domain.review.service.ReviewService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")
