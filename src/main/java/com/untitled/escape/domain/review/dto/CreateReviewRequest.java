@@ -12,7 +12,6 @@ import java.util.List;
 public class CreateReviewRequest {
     @NotNull
     private Long roomId;
-    @NotNull
     private BigDecimal rating;
     private String content;
     private boolean spoiler;

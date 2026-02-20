@@ -105,7 +105,10 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDetailResponse getMyReviewByRoom(Long roomId) {
         UUID userId = SecurityUtils.getCurrentUserId();
         Review review = reviewRepository.findByUserIdAndRoom_Id(userId, roomId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 리뷰 입니다."));
+                .orElse(null);
+        if (review == null) {
+            return null;
+        }
 
         UserSummary userSummary = userService.getUserSummary(review.getUserId());
         long likeCount = likeService.getLikeCount(review.getId(), TargetType.REVIEW);

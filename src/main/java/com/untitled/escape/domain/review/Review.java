@@ -47,15 +47,6 @@ public class Review extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-//    @ElementCollection(fetch = FetchType.LAZY)
-//    @CollectionTable(
-//            name = "review_images",
-//            joinColumns = @JoinColumn(name = "review_id")
-//    )
-//    @Column(name = "image_url")
-//    @Builder.Default
-//    private List<String> imageUrls = new ArrayList<>();
-
     @DecimalMin(value = "0.5")
     @DecimalMax(value = "5.0")
     @Column(nullable = false, precision = 2, scale = 1)
