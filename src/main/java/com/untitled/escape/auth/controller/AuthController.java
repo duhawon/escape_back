@@ -6,15 +6,12 @@ import com.untitled.escape.auth.dto.SignInRequestDto;
 import com.untitled.escape.auth.dto.SignInResultDto;
 import com.untitled.escape.auth.service.AuthService;
 import com.untitled.escape.auth.utils.CookieUtils;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -61,11 +58,11 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@CookieValue(AuthConstants.REFRESH_TOKEN) String refreshToken) {
+    public ResponseEntity<?> reissue(@CookieValue(value = AuthConstants.REFRESH_TOKEN, required = false) String refreshToken) {
         // DESC : 1. refreshToken 유효성 검사
-        if (refreshToken == null) {
-            // TODO : CustomException으로 변경
-            throw new RuntimeException("유효한 토큰이 아닙니다.");
+        if (refreshToken == null || refreshToken.isBlank()) {
+            // TODO : CustomException으로 변경 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         // DESC : 2. refreshToken rt, accessToken 재발급
         ReissueResultDto reissueResultDto = authService.reissue(refreshToken);
@@ -75,6 +72,7 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .header(HttpHeaders.AUTHORIZATION, AuthConstants.BEARER_PREFIX + reissueResultDto.getAccessToken()).build();
+                .header(HttpHeaders.AUTHORIZATION, AuthConstants.BEARER_PREFIX + reissueResultDto.getAccessToken())
+                .body(ReissueResultDto.convertFromDto(reissueResultDto));
     }
 }

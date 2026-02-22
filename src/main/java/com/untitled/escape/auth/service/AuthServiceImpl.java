@@ -52,8 +52,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ReissueResultDto reissue(String refreshToken) {
-        System.out.println("UUID : " + jwtTokenProvider.getTokenId(refreshToken));
-        System.out.println("refreshToken : " + refreshToken);
         // 3. refreshToken redis 검증
         if(!refreshTokenService.exists(jwtTokenProvider.getTokenId(refreshToken), refreshToken)) {
             // TODO : CustomException으로 변경
@@ -72,6 +70,7 @@ public class AuthServiceImpl implements AuthService {
         return new ReissueResultDto().builder()
                 .accessToken(accessToken)
                 .refreshToken(reissueRefreshToken)
+                .user(user)
                 .build();
     }
 

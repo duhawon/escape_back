@@ -1,0 +1,24 @@
+package com.untitled.escape.auth.dto;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Getter
+@NoArgsConstructor(force = true)
+public class ReissueResponseDto {
+    private final UUID userId;
+    private final String email;
+    private final String name;
+    private final String profileUrl;
+
+    @Builder
+    public ReissueResponseDto(UUID userId, String email, String name, String profileUrl) {
+        this.userId = userId;
+        this.email = email;
+        this.name = name;
+        this.profileUrl = profileUrl;
+    }
+}
