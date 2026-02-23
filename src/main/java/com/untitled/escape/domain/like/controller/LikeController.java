@@ -3,8 +3,8 @@ package com.untitled.escape.domain.like.controller;
 import com.untitled.escape.domain.like.TargetType;
 import com.untitled.escape.domain.like.dto.LikeRequest;
 import com.untitled.escape.domain.like.dto.LikeResponse;
+import com.untitled.escape.domain.like.dto.LikerResponse;
 import com.untitled.escape.domain.like.service.LikeService;
-import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.global.dto.response.SliceResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,9 +20,9 @@ public class LikeController {
     }
 
     @GetMapping
-    public SliceResponse<UserSummary> getLikeUsers(@RequestParam TargetType targetType,
-                                                   @RequestParam Long targetId,
-                                                   @PageableDefault(size=10) Pageable pageable) {
+    public SliceResponse<LikerResponse> getLikeUsers(@RequestParam TargetType targetType,
+                                                     @RequestParam Long targetId,
+                                                     @PageableDefault(size=10) Pageable pageable) {
         return SliceResponse.from(likeService.getLikeUsers(targetType, targetId, pageable));
     }
 

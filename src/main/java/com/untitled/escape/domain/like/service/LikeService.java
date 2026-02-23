@@ -2,7 +2,7 @@ package com.untitled.escape.domain.like.service;
 
 import com.untitled.escape.domain.like.TargetType;
 import com.untitled.escape.domain.like.dto.LikeResponse;
-import com.untitled.escape.domain.user.dto.UserSummary;
+import com.untitled.escape.domain.like.dto.LikerResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -14,5 +14,5 @@ public interface LikeService {
     Map<Long, Long> getLikeCountMap(List<Long> targetIds, TargetType targetType);
     LikeResponse like(TargetType targetType, Long targetId);
     LikeResponse unlike(TargetType targetType, Long targetId);
-    Slice<UserSummary> getLikeUsers(TargetType targetType, Long targetId, Pageable pageable);
+    Slice<LikerResponse> getLikeUsers(TargetType targetType, Long targetId, Pageable pageable);
 }

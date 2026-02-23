@@ -1,8 +1,10 @@
 package com.untitled.escape.domain.like.service;
 
+import com.untitled.escape.domain.follow.repository.FollowRepository;
 import com.untitled.escape.domain.like.Like;
 import com.untitled.escape.domain.like.TargetType;
 import com.untitled.escape.domain.like.dto.LikeResponse;
+import com.untitled.escape.domain.like.dto.LikerResponse;
 import com.untitled.escape.domain.like.repository.LikeRepository;
 import com.untitled.escape.domain.like.repository.projection.TargetLikeCount;
 import com.untitled.escape.domain.user.dto.UserSummary;
@@ -14,19 +16,19 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class LikeServiceImpl implements LikeService{
     private final LikeRepository likeRepository;
     private final UserService userService;
+    private final FollowRepository followRepository;
 
-    public LikeServiceImpl(LikeRepository likeRepository, UserService userService) {
+    public LikeServiceImpl(LikeRepository likeRepository, UserService userService, FollowRepository followRepository) {
         this.likeRepository = likeRepository;
         this.userService = userService;
+        this.followRepository = followRepository;
     }
 
     @Override
@@ -56,15 +58,18 @@ public class LikeServiceImpl implements LikeService{
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<UserSummary> getLikeUsers(TargetType targetType, Long targetId, Pageable pageable) {
+    public Slice<LikerResponse> getLikeUsers(TargetType targetType, Long targetId, Pageable pageable) {
         Slice<UUID> userIdSlice = likeRepository.findUserIdsByTarget(targetType, targetId, pageable);
         List<UUID> userIds = userIdSlice.getContent();
-
         if (userIds.isEmpty()) {
             return new SliceImpl<>(List.of(), pageable, false);
         }
         Map<UUID, UserSummary> userMap = userService.getUserSummaries(userIds);
-        return userIdSlice.map(userMap::get);
+        UUID userId = SecurityUtils.getCurrentUserId();
+        List<UUID> followingIds = followRepository.findFollowingIdsIn(userId, userIds);
+        Set<UUID> followingSet = new HashSet<>(followingIds);
+        return userIdSlice.map(uid ->
+                LikerResponse.of(userMap.get(uid), followingSet.contains(uid)));
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
@@ -28,4 +29,13 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     Slice<UUID> findFollowerIds(@Param("userId") UUID userId, Pageable pageable);
 
     void deleteByFollower_IdAndFollowee_Id(UUID userId, UUID targetUserId);
+
+    @Query("""
+            select f.followee.id
+            from Follow f
+            where f.follower.id = :followerId
+            and f.followee.id in :followeeIds
+            """)
+    List<UUID> findFollowingIdsIn(@Param("followerId") UUID followerId,
+                                  @Param("followeeIds") List<UUID> followeeIds);
 }
