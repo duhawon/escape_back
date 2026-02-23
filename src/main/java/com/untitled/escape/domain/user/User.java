@@ -33,7 +33,10 @@ public class User extends BaseEntity {
     private String name;
 
     @Setter
-    @Column(name = "profile_url")
-    private String profileUrl;
+    @Column(name = "profile_img_key")
+    private String profileImgKey;
 
+    public void updateProfileImgKey(String profileImgKey) {
+        this.profileImgKey = profileImgKey;
+    }
 }

@@ -12,13 +12,13 @@ public class ReissueResponseDto {
     private final UUID userId;
     private final String email;
     private final String name;
-    private final String profileUrl;
+    private final String profileImgUrl;
 
     @Builder
-    public ReissueResponseDto(UUID userId, String email, String name, String profileUrl) {
+    public ReissueResponseDto(UUID userId, String email, String name, String profileImgUrl) {
         this.userId = userId;
         this.email = email;
         this.name = name;
-        this.profileUrl = profileUrl;
+        this.profileImgUrl = profileImgUrl;
     }
 }

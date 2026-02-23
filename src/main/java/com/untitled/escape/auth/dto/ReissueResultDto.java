@@ -18,7 +18,4 @@ public class ReissueResultDto {
         this.refreshToken = refreshToken;
         this.user = user;
     }
-    public static ReissueResponseDto convertFromDto(ReissueResultDto dto) {
-        return new ReissueResponseDto(dto.user.getId(), dto.user.getEmail(), dto.user.getName(), dto.user.getProfileUrl());
-    }
 }

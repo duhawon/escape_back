@@ -18,8 +18,4 @@ public class SignInResultDto {
         this.refreshToken = refreshToken;
         this.user = user;
     }
-
-    public static SignInResponseDto convertFromDto(SignInResultDto dto) {
-        return new SignInResponseDto(dto.user.getId(), dto.user.getEmail(), dto.user.getName(), dto.user.getProfileUrl());
-    }
 }

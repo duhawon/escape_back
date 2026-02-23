@@ -56,4 +56,7 @@ public class Room extends BaseEntity {
     @Lob
     @Column(name = "description", nullable = false)
     private String description;
+
+    @Column(name = "poster_img_key")
+    private String posterImgKey;
 }

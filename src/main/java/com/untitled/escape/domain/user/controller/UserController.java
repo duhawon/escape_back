@@ -3,13 +3,11 @@ package com.untitled.escape.domain.user.controller;
 import com.untitled.escape.domain.user.User;
 import com.untitled.escape.domain.user.dto.SignUpRequest;
 import com.untitled.escape.domain.user.dto.SignUpResponse;
+import com.untitled.escape.domain.user.dto.UpdateProfileImageRequest;
 import com.untitled.escape.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -25,5 +23,11 @@ public class UserController {
         User user = userService.signUp(signUpRequest);
         SignUpResponse signUpResponse = SignUpResponse.builder().userId(user.getId()).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(signUpResponse);
+    }
+
+    @PutMapping("/me/profile-img")
+    public ResponseEntity<Void> updatePoster(@RequestBody UpdateProfileImageRequest request) {
+        userService.updateMyProfileImage(request.getProfileImgKey());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -4,6 +4,7 @@ import com.untitled.escape.auth.constant.AuthConstants;
 import com.untitled.escape.auth.dto.ReissueResultDto;
 import com.untitled.escape.auth.dto.SignInRequestDto;
 import com.untitled.escape.auth.dto.SignInResultDto;
+import com.untitled.escape.auth.mapper.AuthResponseMapper;
 import com.untitled.escape.auth.service.AuthService;
 import com.untitled.escape.auth.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,11 @@ public class AuthController {
     @Value("${jwt.refreshTokenExpirationMs}")
     private long refreshTokenExpirationMs;
     private final AuthService authService;
+    private final AuthResponseMapper authResponseMapper;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, AuthResponseMapper authResponseMapper) {
         this.authService = authService;
+        this.authResponseMapper = authResponseMapper;
     }
 
     @PostMapping("/signIn")
@@ -32,7 +35,7 @@ public class AuthController {
         // DESC : 2. refreshToken 쿠키 생성
         ResponseCookie refreshTokenCookie = CookieUtils.createRefreshTokenCookie(signInResultDto.getRefreshToken(),refreshTokenExpirationMs);
         // DESC : 3. 사용자 정보 가져오기
-        var responseBody = SignInResultDto.convertFromDto(signInResultDto);
+        var responseBody = authResponseMapper.toSignInResponse(signInResultDto);
         // DESC : 4. response 리턴
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -73,6 +76,6 @@ public class AuthController {
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .header(HttpHeaders.AUTHORIZATION, AuthConstants.BEARER_PREFIX + reissueResultDto.getAccessToken())
-                .body(ReissueResultDto.convertFromDto(reissueResultDto));
+                .body(authResponseMapper.toReissueResponse(reissueResultDto));
     }
 }

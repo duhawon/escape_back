@@ -15,4 +15,6 @@ public interface UserService {
     UserSummary getUserSummary(UUID userId);
     Map<UUID, UserSummary> getUserSummaries(List<UUID> userIds);
     User getReference(UUID userID);
+
+    void updateMyProfileImage(String profileImgKey);
 }

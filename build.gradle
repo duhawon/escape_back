@@ -49,6 +49,9 @@ dependencies {
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.5.6'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// DESC : aws
+	implementation platform("software.amazon.awssdk:bom:2.25.62")
+	implementation "software.amazon.awssdk:s3"
 }
 
 tasks.named('test') {
