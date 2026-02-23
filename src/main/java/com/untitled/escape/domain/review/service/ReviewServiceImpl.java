@@ -97,7 +97,9 @@ public class ReviewServiceImpl implements ReviewService {
         UserSummary userSummary = userService.getUserSummary(review.getUserId());
         long likeCount = likeService.getLikeCount(review.getId(), TargetType.REVIEW);
         long commentCount = reviewCommentRepository.countByReview_Id(reviewId);
-        return ReviewDetailResponse.of(review, userSummary, likeCount, commentCount);
+        UUID userId = SecurityUtils.getCurrentUserIdOrNull();
+        boolean likedByMe = likeService.isLikedByMe(userId, reviewId, TargetType.REVIEW);
+        return ReviewDetailResponse.of(review, userSummary, likeCount, commentCount, likedByMe);
     }
 
     @Override
@@ -113,8 +115,8 @@ public class ReviewServiceImpl implements ReviewService {
         UserSummary userSummary = userService.getUserSummary(review.getUserId());
         long likeCount = likeService.getLikeCount(review.getId(), TargetType.REVIEW);
         long commentCount = reviewCommentRepository.countByReview_Id(review.getId());
-
-        return ReviewDetailResponse.of(review, userSummary, likeCount, commentCount);
+        boolean likedByMe = likeService.isLikedByMe(userId, review.getId(), TargetType.REVIEW);
+        return ReviewDetailResponse.of(review, userSummary, likeCount, commentCount, likedByMe);
     }
 
     @Override
@@ -154,13 +156,16 @@ public class ReviewServiceImpl implements ReviewService {
                         ReviewCommentCount::getReviewId,
                         ReviewCommentCount::getCount));
 
+        UUID userId = SecurityUtils.getCurrentUserIdOrNull();
+        Set<Long> likedSet = likeService.getLikedTargetIdSet(userId, reviewIds, TargetType.REVIEW);
         List<ReviewSummaryResponse> reviewSummaryResponses = reviews.stream()
                 .map(review ->
                         ReviewSummaryResponse.of(
                                 review,
                                 userSummaryMap.get(review.getUserId()),
                                 likeCountMap.getOrDefault(review.getId(), 0L),
-                                reviewCommentCountMap.getOrDefault(review.getId(), 0L)
+                                reviewCommentCountMap.getOrDefault(review.getId(), 0L),
+                                likedSet.contains(review.getId())
                         ))
                 .toList();
         return new SliceImpl<>(reviewSummaryResponses, p, reviewSlice.hasNext());

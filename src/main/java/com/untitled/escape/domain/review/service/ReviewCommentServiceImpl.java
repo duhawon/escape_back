@@ -18,9 +18,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ReviewCommentServiceImpl implements ReviewCommentService{
@@ -76,13 +74,15 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
                 .map(ReviewComment::getId)
                 .toList();
         Map<Long, Long> likeCountMap = likeService.getLikeCountMap(commentIds, TargetType.REVIEW_COMMENT);
-
+        UUID userId = SecurityUtils.getCurrentUserIdOrNull();
+        Set<Long> likedSet = likeService.getLikedTargetIdSet(userId, commentIds, TargetType.REVIEW_COMMENT);
         List<ReviewCommentResponse> commentResponses = comments.stream()
                 .map(comment ->
                         ReviewCommentResponse.from(
                                 comment,
                                 userSummaryMap.get(comment.getUserId()),
-                                likeCountMap.getOrDefault(comment.getId(),0L)
+                                likeCountMap.getOrDefault(comment.getId(),0L),
+                                likedSet.contains(comment.getId())
                         ))
                 .toList();
         return new SliceImpl<>(commentResponses, pageable, commentSlice.hasNext());

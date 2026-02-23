@@ -35,4 +35,15 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
             group by l.targetId
             """)
     List<TargetLikeCount> countGroupedByTargetIdAndTargetType(@Param("targetIds") List<Long> targetIds, @Param("targetType") TargetType targetType);
+
+    @Query("""
+            select l.targetId
+            from Like l
+            where l.userId = :userId
+            and l.targetType = :targetType
+            and l.targetId in :targetIds
+            """)
+    List<Long> findLikedTargetIdsByUserAndTargetType(@Param("userId") UUID userId,  @Param("targetIds") List<Long> targetIds, @Param("targetType") TargetType targetType);
+
+    boolean existsByUserIdAndTargetIdAndTargetType(UUID userId, Long targetId, TargetType targetType);
 }

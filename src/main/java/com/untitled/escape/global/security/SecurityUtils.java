@@ -30,5 +30,13 @@ public class SecurityUtils {
             throw new IllegalStateException("잘못된 인증 사용자 ID 형식입니다.", e);
         }
     }
-
+    public static UUID getCurrentUserIdOrNull() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) return null;
+        try {
+            return extractUserId(authentication);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

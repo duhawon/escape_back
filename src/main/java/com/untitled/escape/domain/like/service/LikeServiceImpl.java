@@ -90,4 +90,19 @@ public class LikeServiceImpl implements LikeService{
                         TargetLikeCount::getTargetId,
                         TargetLikeCount::getCount));
     }
+
+    @Override
+    public Set<Long> getLikedTargetIdSet(UUID userId, List<Long> targetIds, TargetType targetType) {
+        if (userId == null || targetIds == null || targetIds.isEmpty()) {
+            return Set.of();
+        }
+        return new HashSet<>(likeRepository.findLikedTargetIdsByUserAndTargetType(userId, targetIds, targetType));
+    }
+
+    @Override
+    public boolean isLikedByMe(UUID userId, Long targetId, TargetType targetType) {
+        if (userId == null) return false;
+        return likeRepository.existsByUserIdAndTargetIdAndTargetType(userId, targetId, targetType);
+
+    }
 }

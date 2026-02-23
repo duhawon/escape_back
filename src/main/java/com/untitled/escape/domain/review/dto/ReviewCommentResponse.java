@@ -16,10 +16,13 @@ public class ReviewCommentResponse {
     private long likeCount;
     private LocalDateTime createdAt;
 
+    private boolean likedByMe;
+
     public static ReviewCommentResponse from(
             ReviewComment comment,
             UserSummary userSummary,
-            long likeCount
+            long likeCount,
+            boolean likedByMe
     ) {
         return ReviewCommentResponse.builder()
                 .commentId(comment.getId())
@@ -27,6 +30,7 @@ public class ReviewCommentResponse {
                 .content(comment.getContent())
                 .likeCount(likeCount)
                 .createdAt(comment.getCreatedAt())
+                .likedByMe(likedByMe)
                 .build();
     }
 }

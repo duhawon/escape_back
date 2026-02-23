@@ -19,11 +19,14 @@ public class ReviewSummaryResponse {
     private long likeCount;
     private long commentCount;
 
+    private boolean likedByMe;
+
     public static ReviewSummaryResponse of(
             Review review,
             UserSummary userSummary,
             Long likeCount,
-            Long commentCount) {
+            Long commentCount,
+            boolean likedByMe) {
         return ReviewSummaryResponse.builder()
                 .reviewId(review.getId())
                 .userSummary(userSummary)
@@ -32,6 +35,7 @@ public class ReviewSummaryResponse {
                 .spoiler(review.isSpoiler())
                 .likeCount(likeCount)
                 .commentCount(commentCount)
+                .likedByMe(likedByMe)
                 .build();
     }
 }
