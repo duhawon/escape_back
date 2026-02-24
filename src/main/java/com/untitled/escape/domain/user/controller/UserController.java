@@ -1,13 +1,13 @@
 package com.untitled.escape.domain.user.controller;
 
 import com.untitled.escape.domain.user.User;
-import com.untitled.escape.domain.user.dto.SignUpRequest;
-import com.untitled.escape.domain.user.dto.SignUpResponse;
-import com.untitled.escape.domain.user.dto.UpdateProfileImageRequest;
+import com.untitled.escape.domain.user.dto.*;
 import com.untitled.escape.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -26,8 +26,18 @@ public class UserController {
     }
 
     @PutMapping("/me/profile-img")
-    public ResponseEntity<Void> updatePoster(@RequestBody UpdateProfileImageRequest request) {
+    public ResponseEntity<Void> updateProfileImage(@RequestBody UpdateProfileImageRequest request) {
         userService.updateMyProfileImage(request.getProfileImgKey());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/profile/me")
+    public ResponseEntity<MyProfileResponse> getMyProfile() {
+        return ResponseEntity.ok(userService.getMyProfile());
+    }
+
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable UUID userId) {
+        return ResponseEntity.ok(userService.getUserProfile(userId));
     }
 }

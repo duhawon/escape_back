@@ -1,6 +1,7 @@
 package com.untitled.escape.domain.follow.service;
 
 import com.untitled.escape.domain.follow.Follow;
+import com.untitled.escape.domain.follow.dto.FollowCountResponse;
 import com.untitled.escape.domain.follow.repository.FollowRepository;
 import com.untitled.escape.domain.user.User;
 import com.untitled.escape.domain.user.dto.UserSummary;
@@ -80,5 +81,13 @@ public class FollowServiceImpl implements FollowService {
     public void unfollow(UUID targetUserId) {
         UUID userId = SecurityUtils.getCurrentUserId();
         followRepository.deleteByFollower_IdAndFollowee_Id(userId, targetUserId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FollowCountResponse getFollowCounts(UUID userId) {
+        long followers = followRepository.countByFollowee_Id(userId);
+        long following = followRepository.countByFollower_Id(userId);
+        return new FollowCountResponse(followers, following);
     }
 }

@@ -1,7 +1,10 @@
 package com.untitled.escape.domain.user.service;
 
+import com.untitled.escape.domain.follow.repository.FollowRepository;
 import com.untitled.escape.domain.user.User;
+import com.untitled.escape.domain.user.dto.MyProfileResponse;
 import com.untitled.escape.domain.user.dto.SignUpRequest;
+import com.untitled.escape.domain.user.dto.UserProfileResponse;
 import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.repository.UserRepository;
 import com.untitled.escape.global.exception.CustomException;
@@ -22,11 +25,13 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3UrlResolver s3UrlResolver;
+    private final FollowRepository followRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, S3UrlResolver s3UrlResolver) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, S3UrlResolver s3UrlResolver, FollowRepository followRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.s3UrlResolver = s3UrlResolver;
+        this.followRepository = followRepository;
     }
 
     @Override
@@ -103,6 +108,43 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         user.updateProfileImgKey(profileImgKey);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyProfileResponse getMyProfile() {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        long following = followRepository.countByFollower_Id(userId);
+        long followers = followRepository.countByFollowee_Id(userId);
+
+        return new MyProfileResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                s3UrlResolver.toPublicUrl(user.getProfileImgKey()),
+                followers,
+                following
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileResponse getUserProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+        long following = followRepository.countByFollower_Id(userId);
+        long followers = followRepository.countByFollowee_Id(userId);
+
+        return new UserProfileResponse(
+                user.getId(),
+                user.getName(),
+                s3UrlResolver.toPublicUrl(user.getProfileImgKey()),
+                followers,
+                following
+        );
+    }
+
     private void validateProfileKey(String key) {
         if (key == null || key.isBlank()) {
             throw new CustomException(UserErrorCode.PROFILE_IMAGE_KEY_REQUIRED);

@@ -1,7 +1,9 @@
 package com.untitled.escape.domain.user.service;
 
 import com.untitled.escape.domain.user.User;
+import com.untitled.escape.domain.user.dto.MyProfileResponse;
 import com.untitled.escape.domain.user.dto.SignUpRequest;
+import com.untitled.escape.domain.user.dto.UserProfileResponse;
 import com.untitled.escape.domain.user.dto.UserSummary;
 
 import java.util.List;
@@ -17,4 +19,6 @@ public interface UserService {
     User getReference(UUID userID);
 
     void updateMyProfileImage(String profileImgKey);
+    MyProfileResponse getMyProfile();
+    UserProfileResponse getUserProfile(UUID userId);
 }

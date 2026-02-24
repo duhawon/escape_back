@@ -1,5 +1,6 @@
 package com.untitled.escape.domain.follow.service;
 
+import com.untitled.escape.domain.follow.dto.FollowCountResponse;
 import com.untitled.escape.domain.user.dto.UserSummary;
 
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface FollowService {
     void follow(UUID targetUserId);
 
     void unfollow(UUID targetUserId);
+
+    FollowCountResponse getFollowCounts(UUID userId);
 }

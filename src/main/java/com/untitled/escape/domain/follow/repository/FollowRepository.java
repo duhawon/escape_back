@@ -38,4 +38,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
             """)
     List<UUID> findFollowingIdsIn(@Param("followerId") UUID followerId,
                                   @Param("followeeIds") List<UUID> followeeIds);
+
+    long countByFollowee_Id(UUID userId);
+    long countByFollower_Id(UUID userId);
 }
