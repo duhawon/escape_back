@@ -5,6 +5,8 @@ import com.untitled.escape.domain.room.Room;
 import com.untitled.escape.domain.room.dto.RoomDetailResponse;
 import com.untitled.escape.domain.room.dto.RoomSummaryResponse;
 import com.untitled.escape.domain.room.repository.RoomRepository;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.RoomErrorCode;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -39,7 +41,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional(readOnly = true)
     public RoomDetailResponse getRoom(Long roomId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 방입니다."));
+                .orElseThrow(() -> new CustomException(RoomErrorCode.ROOM_NOT_FOUND));
         Double avg = reviewRepository.findAverageRatingByRoomId(roomId);
         BigDecimal rating = (avg == null)
                 ? BigDecimal.ZERO

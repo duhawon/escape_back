@@ -11,6 +11,9 @@ import com.untitled.escape.domain.room.Room;
 import com.untitled.escape.domain.room.repository.RoomRepository;
 import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.ReviewErrorCode;
+import com.untitled.escape.global.exception.code.RoomErrorCode;
 import com.untitled.escape.global.security.SecurityUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
@@ -46,11 +49,11 @@ public class ReviewServiceImpl implements ReviewService {
         Long roomId = dto.getRoomId();
 
         if (!roomRepository.existsById(roomId)) {
-            throw new RuntimeException("존재하지 않는 방입니다.");  // 404
+            throw new CustomException(RoomErrorCode.ROOM_NOT_FOUND);
         }
 
         if (reviewRepository.existsByUserIdAndRoom_Id(userId, roomId)) {
-            throw new RuntimeException("이미 이 방에 리뷰를 작성했습니다.");
+            throw new CustomException(ReviewErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
         Room roomRef = roomRepository.getReferenceById(dto.getRoomId());
@@ -64,8 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
         try {
             reviewRepository.save(review);
         } catch (DataIntegrityViolationException e) {
-            // DESC : 동시요청 방어..?
-            throw new RuntimeException("이미 이 방에 리뷰를 작성했습니다.");
+            throw new CustomException(ReviewErrorCode.REVIEW_ALREADY_EXISTS);
         }
     }
 
@@ -73,16 +75,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateReview(Long reviewId, UpdateReviewRequest dto) {
         UUID userId = SecurityUtils.getCurrentUserId();
-        // 1. 있는 리뷰인지 확인
-        // TODO : CustomException으로 변경
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않은 리뷰 입니다."));
-        // 2. 작성자 검증
+                .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
         if (!review.getUserId().equals(userId)) {
-            // TODO : CustomException으로 변경
-            throw new RuntimeException("본인 리뷰만 수정 할 수 있습니다.");
+            throw new CustomException(ReviewErrorCode.REVIEW_NOT_OWNER);
         }
-        // 3. 값 수정
         review.updateContent(dto.getContent());
         review.updateRating(dto.getRating());
         review.updateSpoiler(dto.isSpoiler());
@@ -92,7 +89,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public ReviewDetailResponse getReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 리뷰 입니다."));
+                .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         UserSummary userSummary = userService.getUserSummary(review.getUserId());
         long likeCount = likeService.getLikeCount(review.getId(), TargetType.REVIEW);
@@ -174,16 +171,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void deleteReview(Long reviewId) {
         UUID userId = SecurityUtils.getCurrentUserId();
-        // 1. 있는 리뷰인지 확인
-        // TODO : CustomException으로 변경
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않은 리뷰 입니다."));
-        // 2. 작성자 검증
+                .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
         if (!review.getUserId().equals(userId)) {
-            // TODO : CustomException으로 변경
-            throw new RuntimeException("본인 리뷰만 삭제 할 수 있습니다.");
+            throw new CustomException(ReviewErrorCode.REVIEW_NOT_OWNER);
         }
-        // 3. 값 수정
         review.softDelete();
         reviewCommentRepository.softDeleteAllByReviewId(reviewId);
     }

@@ -1,21 +1,13 @@
 package com.untitled.escape.auth.dto;
 
 import com.untitled.escape.domain.user.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor(force = true)
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReissueResultDto {
-    private String accessToken;
-    private String refreshToken;
+    private final String accessToken;
+    private final String refreshToken;
     private final User user;
-
-    @Builder
-    public ReissueResultDto(String accessToken, String refreshToken, User user) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.user = user;
-    }
 }

@@ -11,6 +11,9 @@ import com.untitled.escape.domain.review.repository.ReviewCommentRepository;
 import com.untitled.escape.domain.review.repository.ReviewRepository;
 import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.ReviewCommentErrorCode;
+import com.untitled.escape.global.exception.code.ReviewErrorCode;
 import com.untitled.escape.global.security.SecurityUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -38,7 +41,7 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
     @Transactional
     public void createComment(Long reviewId, CreateReviewCommentRequest request) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 리뷰 입니다."));
+                .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
         UUID userId = SecurityUtils.getCurrentUserId();
         ReviewComment reviewComment = ReviewComment.builder()
                 .userId(userId)
@@ -51,7 +54,7 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
     @Transactional(readOnly = true)
     public Slice<ReviewCommentResponse> getComments(Long reviewId, Pageable pageable) {
         if (!reviewRepository.existsById(reviewId)) {
-            throw new RuntimeException("존재하지 않는 리뷰 입니다.");
+            throw new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND);
         }
 
         Slice<ReviewComment> commentSlice = reviewCommentRepository.findAllByReview_IdOrderByCreatedAtDescIdDesc(reviewId, pageable);
@@ -93,7 +96,7 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
     public void updateComment(Long reviewId, Long commentId, UpdateReviewCommentRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         ReviewComment reviewComment = reviewCommentRepository.findByIdAndReview_IdAndUserId(commentId, reviewId, userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 코멘트 입니다."));
+                .orElseThrow(() -> new CustomException(ReviewCommentErrorCode.COMMENT_NOT_FOUND));
         reviewComment.updateContent(request.getContent());
     }
 
@@ -102,7 +105,7 @@ public class ReviewCommentServiceImpl implements ReviewCommentService{
     public void deleteComment(Long reviewId, Long commentId) {
         UUID userId = SecurityUtils.getCurrentUserId();
         ReviewComment reviewComment = reviewCommentRepository.findByIdAndReview_IdAndUserId(commentId, reviewId, userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않은 코멘트 입니다."));
+                .orElseThrow(() -> new CustomException(ReviewCommentErrorCode.COMMENT_NOT_FOUND));
         reviewComment.softDelete();
     }
 }

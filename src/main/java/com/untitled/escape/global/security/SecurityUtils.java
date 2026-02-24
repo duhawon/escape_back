@@ -1,5 +1,7 @@
 package com.untitled.escape.global.security;
 
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.AuthErrorCode;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +18,7 @@ public class SecurityUtils {
         if (authentication == null
                 || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
-            // TODO : CustomException으로 변경
-            throw new RuntimeException("인증된 사용자 정보가 없습니다.");
+            throw new CustomException(AuthErrorCode.UNAUTHENTICATED);
         }
         return extractUserId(authentication);
     }
@@ -26,8 +27,7 @@ public class SecurityUtils {
         try {
             return UUID.fromString(authentication.getName());
         } catch (IllegalArgumentException e) {
-            // TODO : CustomException으로 변경?
-            throw new IllegalStateException("잘못된 인증 사용자 ID 형식입니다.", e);
+            throw new CustomException(AuthErrorCode.INVALID_AUTHENTICATION);
         }
     }
     public static UUID getCurrentUserIdOrNull() {

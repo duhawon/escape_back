@@ -28,9 +28,7 @@ public final class CookieUtils {
     public static String getCookieValue(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
 
-        if (cookies == null) {
-            throw new RuntimeException();
-        }
+        if (cookies == null) return null;
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(name)) {

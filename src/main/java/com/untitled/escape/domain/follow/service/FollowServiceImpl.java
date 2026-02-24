@@ -5,6 +5,8 @@ import com.untitled.escape.domain.follow.repository.FollowRepository;
 import com.untitled.escape.domain.user.User;
 import com.untitled.escape.domain.user.dto.UserSummary;
 import com.untitled.escape.domain.user.service.UserService;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.FollowErrorCode;
 import com.untitled.escape.global.security.SecurityUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Slice;
@@ -60,8 +62,7 @@ public class FollowServiceImpl implements FollowService {
     public void follow(UUID targetUserId) {
         UUID userId = SecurityUtils.getCurrentUserId();
         if (userId.equals(targetUserId)) {
-            // TODO : CustomException으로 변경
-            throw new RuntimeException("자기 자신을 팔로우 할 수 없습니다.");
+            throw new CustomException(FollowErrorCode.SELF_FOLLOW_NOT_ALLOWED);
         }
 
         User follower = userService.getReference(userId);
