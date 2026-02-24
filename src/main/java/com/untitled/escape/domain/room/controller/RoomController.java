@@ -4,7 +4,6 @@ import com.untitled.escape.domain.room.dto.RoomSummaryResponse;
 import com.untitled.escape.domain.room.service.RoomService;
 import com.untitled.escape.global.dto.response.SliceResponse;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 

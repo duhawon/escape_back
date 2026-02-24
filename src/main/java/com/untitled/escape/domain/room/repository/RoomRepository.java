@@ -14,7 +14,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query("""
             select r.id as id,
                    r.name as name,
-                   avg(rv.rating) as averageRating
+                   avg(rv.rating) as averageRating,
+                   r.posterImgKey as posterImgKey
             from Room r
             left join Review rv on rv.room = r
             where (:query is null or r.name like concat('%', :query, '%'))

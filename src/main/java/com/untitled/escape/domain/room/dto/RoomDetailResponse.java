@@ -14,7 +14,7 @@ public class RoomDetailResponse {
     private Long id;
     private String name;
     private BigDecimal rating;
-
+    private Long ratingCount;
     private List<String> genres;
     private BigDecimal difficulty;
     private int playTimeMinutes;
@@ -22,8 +22,9 @@ public class RoomDetailResponse {
     private int maxPlayers;
     private String storeName;
     private String description;
+    private String posterImgUrl;
 
-    public static RoomDetailResponse from(Room room, BigDecimal rating) {
+    public static RoomDetailResponse from(Room room, BigDecimal rating,long ratingCount, String posterImgUrl) {
         List<String> genreNames = room.getGenres().stream()
                 .map(RoomGenre::getDisplayName)
                 .toList();
@@ -39,6 +40,8 @@ public class RoomDetailResponse {
                 .maxPlayers(room.getMaxPlayers())
                 .storeName(room.getStoreName())
                 .description(room.getDescription())
+                .ratingCount(ratingCount)
+                .posterImgUrl(posterImgUrl)
                 .build();
     }
 }

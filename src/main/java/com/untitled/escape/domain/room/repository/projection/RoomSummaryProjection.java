@@ -4,4 +4,5 @@ public interface RoomSummaryProjection {
     Long getId();
     String getName();
     Double getAverageRating();
+    String getPosterImgKey();
 }

@@ -37,4 +37,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             where r.room.id = :roomId
             """)
     Double findAverageRatingByRoomId(@Param("roomId") Long roomId);
+
+    long countByRoom_Id(Long roomId);
 }
