@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Setter
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Setter
@@ -38,5 +38,23 @@ public class User extends BaseEntity {
 
     public void updateProfileImgKey(String profileImgKey) {
         this.profileImgKey = profileImgKey;
+    }
+
+    public static User createLocal(String email, String password, String name) {
+        if (password == null || password.isBlank()) {
+            throw new RuntimeException("로컬 회원은 비밀번호가 필요합니다.");
+        }
+        return User.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .build();
+    }
+    public static User createOAuth(String email, String name) {
+        return User.builder()
+                .email(email)
+                .password(null)
+                .name(name)
+                .build();
     }
 }

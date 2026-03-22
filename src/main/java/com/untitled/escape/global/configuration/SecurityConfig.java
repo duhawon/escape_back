@@ -37,8 +37,20 @@ public class SecurityConfig {
                         csrfConfig.disable())
                 .cors(cors-> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .httpBasic(httpbc -> httpbc.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/auth/signIn",
+                                "/auth/reissue",
+                                "/users/signUp"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/oauth2/**",
+                                "/login/oauth2/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(ex -> {
                     ex.accessDeniedHandler(new CustomAccessDeniedHandler());
                     ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint());

@@ -52,6 +52,9 @@ dependencies {
 	// DESC : aws
 	implementation platform("software.amazon.awssdk:bom:2.25.62")
 	implementation "software.amazon.awssdk:s3"
+
+	// DESC : oauth2
+	implementation 'org.springframework.security:spring-security-oauth2-client'
 }
 
 tasks.named('test') {

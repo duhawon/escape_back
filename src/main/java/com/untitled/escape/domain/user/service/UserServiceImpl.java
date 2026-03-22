@@ -41,11 +41,10 @@ public class UserServiceImpl implements UserService{
                 .ifPresent(user -> {
                     throw new CustomException(UserErrorCode.EMAIL_ALREADY_IN_USE);
                 });
-        User user = User.builder()
-                .email(signUpRequest.getEmail())
-                .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                .name(signUpRequest.getName())
-                .build();
+        User user = User.createLocal(
+                signUpRequest.getEmail(),
+                passwordEncoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getName());
         userRepository.save(user);
         return user;
     }
