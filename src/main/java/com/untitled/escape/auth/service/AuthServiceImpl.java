@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(validatedUser);
         String refreshToken = jwtTokenProvider.createRefreshToken(validatedUser);
         refreshTokenService.save(validatedUser.getId(), refreshToken);
-        return new SignInResultDto().builder()
+        return SignInResultDto.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
                 .user(validatedUser)

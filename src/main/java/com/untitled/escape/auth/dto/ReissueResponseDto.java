@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor(force = true)
 public class ReissueResponseDto {
     private final UUID userId;
     private final String email;
