@@ -1,6 +1,7 @@
 package com.untitled.escape.auth.controller;
 
 import com.untitled.escape.auth.constant.AuthConstants;
+import com.untitled.escape.auth.dto.OAuthExchangeRequestDto;
 import com.untitled.escape.auth.dto.ReissueResultDto;
 import com.untitled.escape.auth.dto.SignInRequestDto;
 import com.untitled.escape.auth.dto.SignInResultDto;
@@ -65,5 +66,17 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .header(HttpHeaders.AUTHORIZATION, AuthConstants.BEARER_PREFIX + reissueResultDto.getAccessToken())
                 .body(authResponseMapper.toReissueResponse(reissueResultDto));
+    }
+
+    @PostMapping("/oauth/exchange")
+    public ResponseEntity<?> exchangeOAuthCode(@RequestBody OAuthExchangeRequestDto requestDto) {
+        SignInResultDto signInResultDto = authService.exchangeOAuthCode(requestDto.getCode());
+        ResponseCookie refreshTokenCookie = CookieUtils.createRefreshTokenCookie(signInResultDto.getRefreshToken(), refreshTokenExpirationMs);
+        var responseBody = authResponseMapper.toSignInResponse(signInResultDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .header(HttpHeaders.AUTHORIZATION, AuthConstants.BEARER_PREFIX + signInResultDto.getAccessToken())
+                .body(responseBody);
     }
 }

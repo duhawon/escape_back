@@ -8,4 +8,5 @@ public interface AuthService {
     SignInResultDto signIn(SignInRequestDto signInRequestDto);
     void signOut(String RefreshToken);
     ReissueResultDto reissue(String RefreshToken);
+    SignInResultDto exchangeOAuthCode(String code);
 }

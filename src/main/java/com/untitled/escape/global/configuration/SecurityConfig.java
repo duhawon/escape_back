@@ -1,5 +1,7 @@
 package com.untitled.escape.global.configuration;
 
+import com.untitled.escape.auth.oauth.CustomOidcUserService;
+import com.untitled.escape.auth.oauth.OAuthAuthenticationSuccessHandler;
 import com.untitled.escape.global.security.CustomAccessDeniedHandler;
 import com.untitled.escape.global.security.CustomAuthenticationEntryPoint;
 import com.untitled.escape.global.security.JwtAuthenticationFilter;
@@ -17,12 +19,15 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     private final CorsConfigurationSource corsConfigurationSource;
+    private final CustomOidcUserService customOidcUserService;
+    private final OAuthAuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, @Qualifier("customCorsConfig") CorsConfigurationSource corsConfigurationSource) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, @Qualifier("customCorsConfig") CorsConfigurationSource corsConfigurationSource, CustomOidcUserService customOidcUserService, OAuthAuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.corsConfigurationSource = corsConfigurationSource;
+        this.customOidcUserService = customOidcUserService;
+        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
     }
 
     @Bean
@@ -50,6 +55,15 @@ public class SecurityConfig {
                                 "/login/oauth2/**"
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(customOidcUserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler((request, response, exception) -> {
+                            exception.printStackTrace();
+                        })
                 )
                 .exceptionHandling(ex -> {
                     ex.accessDeniedHandler(new CustomAccessDeniedHandler());

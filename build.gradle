@@ -55,6 +55,7 @@ dependencies {
 
 	// DESC : oauth2
 	implementation 'org.springframework.security:spring-security-oauth2-client'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
 }
 
 tasks.named('test') {

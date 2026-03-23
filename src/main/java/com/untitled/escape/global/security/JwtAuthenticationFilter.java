@@ -33,4 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 4. 다음 필터로 넘기기
         filterChain.doFilter(request, response);
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri.startsWith("/api/oauth2/")
+                || uri.startsWith("/api/login/oauth2/");
+    }
 }

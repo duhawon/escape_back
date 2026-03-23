@@ -4,6 +4,7 @@ import com.untitled.escape.auth.dto.ReissueResultDto;
 import com.untitled.escape.auth.dto.SignInRequestDto;
 import com.untitled.escape.auth.dto.SignInResultDto;
 import com.untitled.escape.auth.jwt.JwtTokenProvider;
+import com.untitled.escape.auth.oauth.OAuthLoginCodeService;
 import com.untitled.escape.domain.user.User;
 import com.untitled.escape.domain.user.service.UserService;
 import com.untitled.escape.global.exception.CustomException;
@@ -19,25 +20,20 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final OAuthLoginCodeService oAuthLoginCodeService;
 
-    public AuthServiceImpl(UserService userService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, RefreshTokenService refreshTokenService) {
+    public AuthServiceImpl(UserService userService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, RefreshTokenService refreshTokenService, OAuthLoginCodeService oAuthLoginCodeService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.refreshTokenService = refreshTokenService;
+        this.oAuthLoginCodeService = oAuthLoginCodeService;
     }
 
     @Override
     public SignInResultDto signIn(SignInRequestDto signInRequestDto) {
         User validatedUser = getValidatedUser(signInRequestDto);
-        String accessToken = jwtTokenProvider.createAccessToken(validatedUser);
-        String refreshToken = jwtTokenProvider.createRefreshToken(validatedUser);
-        refreshTokenService.save(validatedUser.getId(), refreshToken);
-        return SignInResultDto.builder()
-                .refreshToken(refreshToken)
-                .accessToken(accessToken)
-                .user(validatedUser)
-                .build();
+        return issueTokens(validatedUser);
     }
 
     @Override
@@ -63,11 +59,29 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Override
+    public SignInResultDto exchangeOAuthCode(String code) {
+        UUID userId = oAuthLoginCodeService.consume(code);
+        User user = userService.getById(userId);
+        return issueTokens(user);
+    }
+
     private User getValidatedUser(SignInRequestDto signInRequestDto) {
         User user = userService.getByEmail(signInRequestDto.getEmail());
         if (!passwordEncoder.matches(signInRequestDto.getPassword(), user.getPassword())) {
             throw new CustomException(AuthErrorCode.INVALID_PASSWORD);
         }
         return user;
+    }
+
+    private SignInResultDto issueTokens(User user) {
+        String accessToken = jwtTokenProvider.createAccessToken(user);
+        String refreshToken = jwtTokenProvider.createRefreshToken(user);
+        refreshTokenService.save(user.getId(), refreshToken);
+        return SignInResultDto.builder()
+                .refreshToken(refreshToken)
+                .accessToken(accessToken)
+                .user(user)
+                .build();
     }
 }
