@@ -1,5 +1,6 @@
 package com.untitled.escape.domain.user;
 
+import com.untitled.escape.auth.oauth.OAuthProvider;
 import com.untitled.escape.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

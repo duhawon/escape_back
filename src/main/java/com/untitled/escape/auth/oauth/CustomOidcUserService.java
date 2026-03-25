@@ -20,6 +20,11 @@ public class CustomOidcUserService implements OAuth2UserService<OidcUserRequest,
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest){
         OidcUserService delegate = new OidcUserService();
+
+        if("naver".equals(userRequest.getClientRegistration().getRegistrationId())){
+            delegate.setOauth2UserService(new NaverOAuth2UserService());
+        }
+
         OidcUser oidcUser = delegate.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();

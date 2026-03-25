@@ -1,6 +1,6 @@
 package com.untitled.escape.domain.user.repository;
 
-import com.untitled.escape.domain.user.OAuthProvider;
+import com.untitled.escape.auth.oauth.OAuthProvider;
 import com.untitled.escape.domain.user.UserOAuthAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
