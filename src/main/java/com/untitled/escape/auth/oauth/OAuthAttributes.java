@@ -1,5 +1,7 @@
 package com.untitled.escape.auth.oauth;
 
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.AuthErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,7 +31,7 @@ public class OAuthAttributes {
         if ("naver".equals(registrationId)) {
             return ofNaver(userNameAttributeName, attributes);
         }
-        throw new RuntimeException("지원하지 않는 registrationId: " + registrationId);
+        throw new CustomException(AuthErrorCode.OAUTH2_PROVIDER_NOT_SUPPORTED);
     }
 
     private static OAuthAttributes ofNaver(

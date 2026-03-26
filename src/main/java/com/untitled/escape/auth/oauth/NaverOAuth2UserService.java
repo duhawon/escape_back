@@ -1,5 +1,7 @@
 package com.untitled.escape.auth.oauth;
 
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.AuthErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,7 +39,7 @@ public class NaverOAuth2UserService extends DefaultOAuth2UserService {
                     .retrieve()
                     .toEntity(NaverUserInfoDto.class);
             if (response.getBody() == null || response.getBody().response() == null) {
-                throw new RuntimeException("네이버 사용자 정보가 없습니다.");
+                throw new CustomException(AuthErrorCode.OAUTH2_USER_INFO_NOT_FOUND);
             }
             Map<String, Object> userAttributes = response.getBody().response();
 

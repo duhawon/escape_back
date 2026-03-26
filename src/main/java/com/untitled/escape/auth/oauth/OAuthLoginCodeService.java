@@ -1,4 +1,6 @@
 package com.untitled.escape.auth.oauth;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.AuthErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -33,7 +35,7 @@ public class OAuthLoginCodeService {
         String userId = redisTemplate.opsForValue().get(key);
 
         if (userId == null || userId.isBlank()) {
-            throw new RuntimeException("유효하지 않거나 만료된 OAuth 로그인 코드입니다.");
+            throw new CustomException(AuthErrorCode.OAUTH2_LOGIN_CODE_INVALID_OR_EXPIRED);
         }
 
         redisTemplate.delete(key);

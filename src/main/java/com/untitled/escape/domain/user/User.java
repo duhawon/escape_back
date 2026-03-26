@@ -1,6 +1,8 @@
 package com.untitled.escape.domain.user;
 
 import com.untitled.escape.global.entity.BaseEntity;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.UserErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -42,7 +44,7 @@ public class User extends BaseEntity {
 
     public static User createLocal(String email, String password, String name) {
         if (password == null || password.isBlank()) {
-            throw new RuntimeException("로컬 회원은 비밀번호가 필요합니다.");
+            throw new CustomException(UserErrorCode.LOCAL_ACCOUNT_PASSWORD_REQUIRED);
         }
         return User.builder()
                 .email(email)

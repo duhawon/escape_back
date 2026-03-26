@@ -2,6 +2,8 @@ package com.untitled.escape.domain.user;
 
 import com.untitled.escape.auth.oauth.OAuthProvider;
 import com.untitled.escape.global.entity.BaseEntity;
+import com.untitled.escape.global.exception.CustomException;
+import com.untitled.escape.global.exception.code.UserErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -48,14 +50,17 @@ public class UserOAuthAccount extends BaseEntity {
     }
 
     public static UserOAuthAccount of(User user, OAuthProvider provider, String providerUserId) {
-        if (providerUserId == null || providerUserId.isBlank()) {
-            throw new RuntimeException("providerUserId는 필수입니다.");
-        }
+        validateProviderUserId(providerUserId);
 
         return UserOAuthAccount.builder()
                 .user(user)
                 .provider(provider)
                 .providerUserId(providerUserId)
                 .build();
+    }
+    private static void validateProviderUserId(String providerUserId) {
+        if (providerUserId == null || providerUserId.isBlank()) {
+            throw new CustomException(UserErrorCode.USER_OAUTH_PROVIDER_USER_ID_REQUIRED);
+        }
     }
 }
