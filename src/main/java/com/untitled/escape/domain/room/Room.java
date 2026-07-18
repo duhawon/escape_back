@@ -45,16 +45,17 @@ public class Room extends BaseEntity {
     @Column(name = "play_time_minutes", nullable = false)
     private int playTimeMinutes;
 
-    @Column(name = "min_players", nullable = false)
-    private int minPlayers;
-    @Column(name = "max_players", nullable = false)
-    private int maxPlayers;
+    // DESC : 원본 데이터에 없어 nullable. 값이 없을 수 있으므로 primitive(int) -> Integer 로 변경.
+    @Column(name = "min_players")
+    private Integer minPlayers;
+    @Column(name = "max_players")
+    private Integer maxPlayers;
 
     @Column(name = "store_name", nullable = false)
     private String storeName;
 
     @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "poster_img_key")
