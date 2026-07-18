@@ -1,0 +1,7 @@
+# escape_back/.dockerignore
+.git
+.gitignore
+build
+.gradle
+*.md
+.idea
