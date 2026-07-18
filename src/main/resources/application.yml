@@ -11,6 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
+    defer-datasource-initialization: true
     show-sql: true
     properties:
       hibernate:
@@ -18,6 +19,9 @@ spring:
         highlight_sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
+  sql:
+    init:
+      mode: ${SPRING_SQL_INIT_MODE:never}
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
