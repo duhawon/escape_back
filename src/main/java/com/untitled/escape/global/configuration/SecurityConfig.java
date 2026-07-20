@@ -48,7 +48,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/signIn",
                                 "/auth/reissue",
-                                "/users/signUp"
+                                "/users/signUp",
+                                "/actuator/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/oauth2/**",
