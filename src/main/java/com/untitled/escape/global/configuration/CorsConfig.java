@@ -16,7 +16,8 @@ public class CorsConfig {
     @Qualifier("customCorsConfig")
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000",
+                "http://k8s-escape-escapein-0ce5efbb47-1320675137.ap-northeast-2.elb.amazonaws.com"));
         corsConfiguration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowCredentials(true);
